@@ -1,0 +1,32 @@
+clear all;
+clc;
+
+dim = 2;
+dirName = ['data/',num2str(dim),'D/'];
+
+nSamples = 1000;
+nWalks = 30;
+bounds = [0,1];
+nCircles = 2:30;
+
+save([dirName, 'settings.mat'], 'dim', 'nSamples', 'bounds', 'nCircles', 'nWalks');
+
+for i=1:length(nCircles)
+    dimTrue = nCircles(i) * dim;
+    nSamplesTrue = nSamples * dimTrue;
+    x = zeros(nWalks, nSamplesTrue, dimTrue);
+    f = zeros(nWalks, nSamplesTrue);
+    
+    for j=1:nWalks
+        RandStream.setDefaultStream(RandStream('mt19937ar','seed',nCircles(i))); % So we can reproduce
+          x(j, :, :) = rand(nSamplesTrue, dimTrue) * range(bounds) + min(bounds);
+          f(j, :) = circleInASquare(nCircles(i), dim, flags, x(j,k,:));
+
+        for k=1:nSamplesTrue
+            f(j,k) = circ_in_square(nCircles(i), dim, flags, x(j,k,:));
+        end
+                
+%         save([dirName, 'circle_',num2str(nCircles(i)),'.mat'], 'x', 'f');
+    end
+    disp(['Finished circle ',num2str(nCircles(i))]);
+end
